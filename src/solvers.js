@@ -16,10 +16,53 @@
 
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
+  // input: num (size of board)
+  // var solution = undefined; //fixme
+  //////////////////////////////////////////
+  // LEFT OFF HERE DEBUGGING ACCESSING TOGGLEPIECE IN OUR HELPER FUNCTION
+  //////////////////////////////////////////
+  
+  let a = 'poop'; 
+  debugger;
+  let newBoard = new Board({'n': n});
+  let boardState = newBoard.rows();
+  let counter = 0;
+  let numRooks = 0;
+  // // define a board
+  let solveBoard = function(board) {
+    // input: entire board
+    // base case if no next row, then something
+    if (counter === boardState.length) {
+      if (numRooks === n) {
+        return board;
+      } else {
+        return undefined;
+      }
+    }
+    let row = board[counter];
+    for (let j = 0; j < row.length; j++) {
+      //     place rook
+      debugger;
+      board.togglePiece(counter, j);
+      if (board.hasColConflictAt(j)) {
+        board.togglePiece(counter, j);
+      } else {
+        //     if next row iterate next row 
+        //       if no collisions with this index 
+        //         place rook
+        //         recall helper function
+        counter++;
+        numRooks++; 
+        solveBoard(board);
+      }  
+    }
+    //output: boardState if solved, else undefined
+  };
+  return solveBoard(boardState);
+  // console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  // return solution;
 
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+  // output: list of arrays (board)
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other

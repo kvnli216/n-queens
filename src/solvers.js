@@ -88,13 +88,14 @@ window.countNRooksSolutions = function(n) {
         reRunNum++;
         counter = 0;
         numRooks = 0;
-        newBoard = new Board({'n': n});
-        boardState = newBoard.rows();
+        board = new Board({'n': n});
+        boardState = board.rows();
       } else {
         return undefined;
       }
       if (reRunNum === n) {
-        return solveBoardMirror(newBoard); // DOUBLE CHECK INPUT
+        reRunNum = 0;
+        return solveBoardMirror(board); // DOUBLE CHECK INPUT
       }
     }
     let row = boardState[counter];
@@ -125,7 +126,7 @@ window.countNRooksSolutions = function(n) {
 
   let solveBoardMirror = function(board) {
     debugger;
-    let boardState = newBoard.rows();
+    let boardState = board.rows();
     if (counter === boardState.length) {
       if (numRooks === n) {
         let boardStateString = JSON.stringify(boardState);
@@ -134,8 +135,8 @@ window.countNRooksSolutions = function(n) {
         reRunNum++;
         counter = 0;
         numRooks = 0;
-        newBoard = new Board({'n': n});
-        boardState = newBoard.rows();
+        board = new Board({'n': n});
+        boardState = board.rows();
       } else {
         return undefined;
       }
@@ -145,7 +146,7 @@ window.countNRooksSolutions = function(n) {
     }
     let row = boardState[counter];
     if (counter === 0) {
-      for (let j = 0; j < row.length; j++) { //flip 0 and row.length
+      for (let j = 0; j < row.length; j++) { //flip 0 and row.length<------- DO THIS
         board.togglePiece(counter, j + reRunNum);
         if (board.hasColConflictAt(j + reRunNum)) {
           board.togglePiece(counter, j + reRunNum);

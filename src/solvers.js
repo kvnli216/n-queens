@@ -18,9 +18,6 @@
 window.findNRooksSolution = function(n) {
   // input: num (size of board)
   // var solution = undefined; //fixme
-  //////////////////////////////////////////
-  // LEFT OFF HERE DEBUGGING ACCESSING TOGGLEPIECE IN OUR HELPER FUNCTION
-  //////////////////////////////////////////
   let newBoard = new Board({'n': n});
 
   let counter = 0;
@@ -68,10 +65,104 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  /////////////////////////////////////////////////////
+  // we got this hurururhr - somehow someway rerun everything iterating backwards (mirrored)
+  /////////////////////////////////////////////////////
+  let newBoard = new Board({'n': n});
+  let counter = 0;
+  let numRooks = 0;
+  let solutionCount = 0;
+  let reRunNum = 0;
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  let solveBoard = function(board) {
+    let boardState = newBoard.rows();
+    if (counter === boardState.length) {
+      if (numRooks === n) {
+        solutionCount++;
+        reRunNum++;
+        counter = 0;
+        numRooks = 0;
+        newBoard = new Board({'n': n});
+        boardState = newBoard.rows();
+      } else {
+        return undefined;
+      }
+      if (reRunNum === n) {
+        debugger;
+        return solveBoardMirror(newBoard); // DOUBLE CHECK INPUT
+      }
+    }
+    let row = boardState[counter];
+    if (counter === 0) {
+      for (let j = 0; j < row.length; j++) {
+        board.togglePiece(counter, j + reRunNum);
+        if (board.hasColConflictAt(j + reRunNum)) {
+          board.togglePiece(counter, j + reRunNum);
+        } else {
+          counter++;
+          numRooks++; 
+          return solveBoard(board);
+        }  
+      }
+    } else {
+      for (let j = 0; j < row.length; j++) {
+        board.togglePiece(counter, j);
+        if (board.hasColConflictAt(j)) {
+          board.togglePiece(counter, j);
+        } else {
+          counter++;
+          numRooks++; 
+          return solveBoard(board);
+        }  
+      }
+    }
+  };
+
+  let solveBoardMirror = function(board) {
+    let boardState = newBoard.rows();
+    if (counter === boardState.length) {
+      if (numRooks === n) {
+        solutionCount++;
+        reRunNum++;
+        counter = 0;
+        numRooks = 0;
+        newBoard = new Board({'n': n});
+        boardState = newBoard.rows();
+      } else {
+        return undefined;
+      }
+      if (reRunNum === n) {
+        debugger;
+        return solutionCount;
+      }
+    }
+    let row = boardState[counter];
+    if (counter === 0) {
+      for (let j = 0; j < row.length; j++) { //flip 0 and row.length
+        board.togglePiece(counter, j + reRunNum);
+        if (board.hasColConflictAt(j + reRunNum)) {
+          board.togglePiece(counter, j + reRunNum);
+        } else {
+          counter++;
+          numRooks++; 
+          return solveBoard(board);
+        }  
+      }
+    } else {
+      for (let j = 0; j < row.length; j++) { //flip 0 and row.length
+        board.togglePiece(counter, j);
+        if (board.hasColConflictAt(j)) {
+          board.togglePiece(counter, j);
+        } else {
+          counter++;
+          numRooks++; 
+          return solveBoard(board);
+        }  
+      }
+    }
+  };
+
+  return solveBoard(newBoard);
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other

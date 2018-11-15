@@ -25,7 +25,7 @@ window.findNRooksSolution = function(n) {
   // // define a board
   let solveBoard = function(board) {
     // input: entire board
-    let boardState = newBoard.rows();
+    let boardState = board.rows(); // we are changing newBoard to board ???
     // base case if no next row, then something
     if (counter === boardState.length) {
       if (numRooks === n) {
@@ -73,11 +73,17 @@ window.countNRooksSolutions = function(n) {
   let numRooks = 0;
   let solutionCount = 0;
   let reRunNum = 0;
+  let solveHash = {};
 
   let solveBoard = function(board) {
-    let boardState = newBoard.rows();
+    debugger;
+    let boardState = board.rows(); //check if newBoard is supposed to be board
     if (counter === boardState.length) {
       if (numRooks === n) {
+        // actual board, convert to a var thats the stringify version
+        let boardStateString = JSON.stringify(boardState);
+        // add the var as a key of solveHash
+        solveHash[boardStateString] = 1;
         solutionCount++;
         reRunNum++;
         counter = 0;
@@ -88,7 +94,6 @@ window.countNRooksSolutions = function(n) {
         return undefined;
       }
       if (reRunNum === n) {
-        debugger;
         return solveBoardMirror(newBoard); // DOUBLE CHECK INPUT
       }
     }
@@ -119,9 +124,12 @@ window.countNRooksSolutions = function(n) {
   };
 
   let solveBoardMirror = function(board) {
+    debugger;
     let boardState = newBoard.rows();
     if (counter === boardState.length) {
       if (numRooks === n) {
+        let boardStateString = JSON.stringify(boardState);
+        solveHash[boardStateString] = 1;
         solutionCount++;
         reRunNum++;
         counter = 0;
@@ -132,8 +140,7 @@ window.countNRooksSolutions = function(n) {
         return undefined;
       }
       if (reRunNum === n) {
-        debugger;
-        return solutionCount;
+        return Object.keys(solveHash).length;
       }
     }
     let row = boardState[counter];
@@ -145,7 +152,7 @@ window.countNRooksSolutions = function(n) {
         } else {
           counter++;
           numRooks++; 
-          return solveBoard(board);
+          return solveBoardMirror(board);
         }  
       }
     } else {
@@ -156,7 +163,7 @@ window.countNRooksSolutions = function(n) {
         } else {
           counter++;
           numRooks++; 
-          return solveBoard(board);
+          return solveBoardMirror(board);
         }  
       }
     }

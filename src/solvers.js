@@ -21,28 +21,29 @@ window.findNRooksSolution = function(n) {
   //////////////////////////////////////////
   // LEFT OFF HERE DEBUGGING ACCESSING TOGGLEPIECE IN OUR HELPER FUNCTION
   //////////////////////////////////////////
-  
-  let a = 'poop'; 
-  debugger;
   let newBoard = new Board({'n': n});
-  let boardState = newBoard.rows();
+
   let counter = 0;
   let numRooks = 0;
   // // define a board
   let solveBoard = function(board) {
     // input: entire board
+    let boardState = newBoard.rows();
     // base case if no next row, then something
     if (counter === boardState.length) {
       if (numRooks === n) {
-        return board;
+        // instead of returning immediately
+        // create solution array to push multiple solutions
+        // if there are no more solutions
+        // return solutions array
+        return board.rows();
       } else {
         return undefined;
       }
     }
-    let row = board[counter];
+    let row = boardState[counter];
     for (let j = 0; j < row.length; j++) {
       //     place rook
-      debugger;
       board.togglePiece(counter, j);
       if (board.hasColConflictAt(j)) {
         board.togglePiece(counter, j);
@@ -53,12 +54,12 @@ window.findNRooksSolution = function(n) {
         //         recall helper function
         counter++;
         numRooks++; 
-        solveBoard(board);
+        return solveBoard(board);
       }  
     }
     //output: boardState if solved, else undefined
   };
-  return solveBoard(boardState);
+  return solveBoard(newBoard);
   // console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   // return solution;
 

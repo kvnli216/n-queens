@@ -65,112 +65,79 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  /////////////////////////////////////////////////////
-  // we got this hurururhr - somehow someway rerun everything iterating backwards (mirrored)
-  /////////////////////////////////////////////////////
-  let newBoard = new Board({'n': n});
-  let counter = 0;
-  let numRooks = 0;
-  let solutionCount = 0;
-  let reRunNum = 0;
-  let solveHash = {};
+  // input: number (n x n board)
+  // create new board size n
+  
+  // create solution counter // REPLACE HASH WITH COUNTER
+  let solutionCounter = 0;
+  // create a currRow counter (start at 1)
+  let currRow = 1; //<- double check
+  // create a pieceCounter (checking for placing all the pieces)
+  let pieceCounter = 0;
 
-  let solveBoard = function(board) {
-    debugger;
-    let boardState = board.rows(); //check if newBoard is supposed to be board
-    if (counter === boardState.length) {
-      if (numRooks === n) {
-        // actual board, convert to a var thats the stringify version
-        let boardStateString = JSON.stringify(boardState);
-        // add the var as a key of solveHash
-        solveHash[boardStateString] = 1;
-        solutionCount++;
-        reRunNum++;
-        counter = 0;
-        numRooks = 0;
-        board = new Board({'n': n});
-        boardState = board.rows();
+  let solveBoard = function(currBoard, indexOfLastPiece) {
+    
+    for (let i = 0; i < n; i++) {
+      currBoard.togglePiece(currRow, i);
+      if (currBoard.hasColConflictAt(i)) {
+        currBoard.togglePiece(currRow, i);
+        if (i + 1 === n) {
+          currRow--;
+          currBoard.togglePiece(currRow, indexOfLastPiece);
+          pieceCounter--;
+          break;
+        }
       } else {
-        return undefined;
-      }
-      if (reRunNum === n) {
-        reRunNum = 0;
-        return solveBoardMirror(board); // DOUBLE CHECK INPUT
-      }
-    }
-    let row = boardState[counter];
-    if (counter === 0) {
-      for (let j = 0; j < row.length; j++) {
-        board.togglePiece(counter, j + reRunNum);
-        if (board.hasColConflictAt(j + reRunNum)) {
-          board.togglePiece(counter, j + reRunNum);
+        pieceCounter++;
+        let board = currBoard.rows();
+        if (board[currRow + 1] !== undefined) {
+          currRow++;
+          solveBoard(currBoard, i);
         } else {
-          counter++;
-          numRooks++; 
-          return solveBoard(board);
-        }  
-      }
-    } else {
-      for (let j = 0; j < row.length; j++) {
-        board.togglePiece(counter, j);
-        if (board.hasColConflictAt(j)) {
-          board.togglePiece(counter, j);
-        } else {
-          counter++;
-          numRooks++; 
-          return solveBoard(board);
-        }  
+          if (pieceCounter === n) {
+            debugger;
+            solutionCounter++;
+            if (i + 1 === n) {
+              currBoard.togglePiece(currRow, i);
+              pieceCounter--;
+              currBoard.togglePiece(currRow - 1, indexOfLastPiece);
+              pieceCounter--;
+              currRow--;
+              break;
+            } else {
+              currBoard.togglePiece(currRow, i);
+              pieceCounter--;
+            }
+          }
+        }
       }
     }
   };
-
-  let solveBoardMirror = function(board) {
-    debugger;
-    let boardState = board.rows();
-    if (counter === boardState.length) {
-      if (numRooks === n) {
-        let boardStateString = JSON.stringify(boardState);
-        solveHash[boardStateString] = 1;
-        solutionCount++;
-        reRunNum++;
-        counter = 0;
-        numRooks = 0;
-        board = new Board({'n': n});
-        boardState = board.rows();
-      } else {
-        return undefined;
-      }
-      if (reRunNum === n) {
-        return Object.keys(solveHash).length;
-      }
-    }
-    let row = boardState[counter];
-    if (counter === 0) {
-      for (let j = 0; j < row.length; j++) { //flip 0 and row.length<------- DO THIS
-        board.togglePiece(counter, j + reRunNum);
-        if (board.hasColConflictAt(j + reRunNum)) {
-          board.togglePiece(counter, j + reRunNum);
-        } else {
-          counter++;
-          numRooks++; 
-          return solveBoardMirror(board);
-        }  
-      }
-    } else {
-      for (let j = 0; j < row.length; j++) { //flip 0 and row.length
-        board.togglePiece(counter, j);
-        if (board.hasColConflictAt(j)) {
-          board.togglePiece(counter, j);
-        } else {
-          counter++;
-          numRooks++; 
-          return solveBoardMirror(board);
-        }  
-      }
-    }
-  };
-
-  return solveBoard(newBoard);
+  // iterate through the first row
+  for (let i = 0; i < n; i++) {
+    let newBoard = new Board({'n': n});
+    newBoard.togglePiece(0, i);
+    pieceCounter = 1;
+    solveBoard(newBoard, currRow);
+  }
+  
+  //   solveBoard = function(board, currRow) { // iterate through every possible branch ON THIS TREE
+  //     iterate through currRow (index i)
+  //       place piece at index i
+  //       check for collision
+  //         if collides
+  //           remove piece
+  //         else (no collision)
+  //           if there's a next row
+  //             solveBoard(board, currRow + 1)
+  //           else
+  //             if (we placed all the pieces)
+  //               add solutionCounter++
+  
+              
+  // output: number (total amount of possible solutions)
+  debugger;
+  return solutionCounter;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other

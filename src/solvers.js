@@ -65,78 +65,57 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  // input: number (n x n board)
-  // create new board size n
-  
-  // create solution counter // REPLACE HASH WITH COUNTER
+  let newBoard = new Board({'n': n});
   let solutionCounter = 0;
-  // create a currRow counter (start at 1)
-  let currRow = 1; //<- double check
-  // create a pieceCounter (checking for placing all the pieces)
+  let rowIndex = 0;
   let pieceCounter = 0;
 
-  let solveBoard = function(currBoard, indexOfLastPiece) {
-    
+  // solveBoard(rowIndex);
+  let solveBoard = function(rowIndex) {
+  //   iterates over rowIndex (i)
     for (let i = 0; i < n; i++) {
-      currBoard.togglePiece(currRow, i);
-      if (currBoard.hasColConflictAt(i)) {
-        currBoard.togglePiece(currRow, i);
-        if (i + 1 === n) {
-          currRow--;
-          currBoard.togglePiece(currRow, indexOfLastPiece);
-          pieceCounter--;
-          break;
-        }
+      newBoard.togglePiece(rowIndex, i);
+      if (newBoard.hasColConflictAt(i)) {
+        //       untoggle
+        newBoard.togglePiece(rowIndex, i);
       } else {
         pieceCounter++;
-        let board = currBoard.rows();
-        if (board[currRow + 1] !== undefined) {
-          currRow++;
-          solveBoard(currBoard, i);
+        //     else (if pass) 
+        //       if next row exists
+        if (rowIndex + 1 < n) {
+          //         solveBoard(rowIndex + 1)
+          solveBoard(rowIndex + 1);
         } else {
+          //       else (this is the last row)
           if (pieceCounter === n) {
-            debugger;
+            //         if we placed all the pieces
+            //           add to solutionCounter
             solutionCounter++;
-            if (i + 1 === n) {
-              currBoard.togglePiece(currRow, i);
-              pieceCounter--;
-              currBoard.togglePiece(currRow - 1, indexOfLastPiece);
-              pieceCounter--;
-              currRow--;
-              break;
-            } else {
-              currBoard.togglePiece(currRow, i);
+            if (i + 1 < n) {
+              newBoard.togglePiece(rowIndex, i);
               pieceCounter--;
             }
           }
         }
       }
     }
+    let board = newBoard.rows();
+    for (let i = 0; i < n; i++) {
+      if (board[rowIndex][i] === 1) {
+        newBoard.togglePiece(rowIndex, i);
+        pieceCounter--;
+      }
+      if (rowIndex !== 0) {
+        if (board[rowIndex - 1][i] === 1) {
+          newBoard.togglePiece(rowIndex - 1, i);
+          pieceCounter--;
+        }
+      }
+    }
   };
-  // iterate through the first row
-  for (let i = 0; i < n; i++) {
-    let newBoard = new Board({'n': n});
-    newBoard.togglePiece(0, i);
-    pieceCounter = 1;
-    solveBoard(newBoard, currRow);
-  }
   
-  //   solveBoard = function(board, currRow) { // iterate through every possible branch ON THIS TREE
-  //     iterate through currRow (index i)
-  //       place piece at index i
-  //       check for collision
-  //         if collides
-  //           remove piece
-  //         else (no collision)
-  //           if there's a next row
-  //             solveBoard(board, currRow + 1)
-  //           else
-  //             if (we placed all the pieces)
-  //               add solutionCounter++
-  
-              
-  // output: number (total amount of possible solutions)
-  debugger;
+  solveBoard(rowIndex);
+
   return solutionCounter;
 };
 
